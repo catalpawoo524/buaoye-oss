@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.catalpawoo524</groupId>
+        <artifactId>buaoye-oss</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>buaoye-oss-core</artifactId>
+    <description>核心</description>
+    <url>https://github.com/catalpawoo524/buaoye-oss</url>
+    <version>${revision}</version>
+
+    <developers>
+        <developer>
+            <id>catalpawoo</id>
+            <name>Jayson Wu</name>
+            <email>catalpawoo524@gmail.com</email>
+            <roles>
+                <role>Project Manager</role>
+                <role>Architect</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>https://github.com/catalpawoo524/buaoye-oss.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:catalpawoo524/buaoye-oss.git</developerConnection>
+        <url>https://github.com/catalpawoo524/buaoye-oss</url>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.catalpawoo524</groupId>
+            <artifactId>buaoye-oss-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws-s3.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

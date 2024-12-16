@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.catalpawoo524</groupId>
+    <artifactId>buaoye-oss</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+
+    <name>buaoye-oss</name>
+    <description>基于 Amazon S3 的 OSS 操作工具，实现客户端管理、文件缓存管理等功能。</description>
+    <url>https://github.com/catalpawoo524/buaoye-oss</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>catalpawoo</id>
+            <name>Jayson Wu</name>
+            <email>catalpawoo524@gmail.com</email>
+            <roles>
+                <role>Project Manager</role>
+                <role>Architect</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>https://github.com/catalpawoo524/buaoye-oss.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:catalpawoo524/buaoye-oss.git</developerConnection>
+        <url>https://github.com/catalpawoo524/buaoye-oss</url>
+    </scm>
+
+    <modules>
+        <module>buaoye-oss-core</module>
+        <module>buaoye-oss-spring-boot3-starter</module>
+        <module>buaoye-oss-common</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- 产物 JDK 版本 -->
+        <java.version>8</java.version>
+        <!-- 当前项目版本 -->
+        <revision>1.0.0</revision>
+        <!-- FlattenMaven 插件版本，用于展平项目依赖关系 -->
+        <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
+        <!-- MavenCentral 推送插件版本 -->
+        <central-publishing-maven-plugin.version>0.4.0</central-publishing-maven-plugin.version>
+        <!-- Maven 源码解析插件版本 -->
+        <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+        <!-- MavenJava 文档插件版本 -->
+        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+        <!-- MavenGPG 密钥插件版本 -->
+        <maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
+        <!-- Maven 编译器插件版本 -->
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+
+        <!-- 项目依赖 -->
+        <spring-boot2.version>2.7.18</spring-boot2.version>
+        <spring-framework5.version>5.3.30</spring-framework5.version>
+        <slf4j-api1.version>1.7.36</slf4j-api1.version>
+        <spring-boot3.version>3.4.0</spring-boot3.version>
+        <spring-framework6.version>6.2.1</spring-framework6.version>
+        <slf4j-api2.version>2.0.9</slf4j-api2.version>
+
+        <aws-s3.version>1.12.765</aws-s3.version>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- 依赖展平 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Maven Central发布 -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>catalpawoo</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                </configuration>
+            </plugin>
+            <!-- Source源码解析 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- JavaDoc插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- MavenGPG插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <configuration>
+                    <keyname>Jason Wu</keyname>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- JDK版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
