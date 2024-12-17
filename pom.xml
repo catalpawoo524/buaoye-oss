@@ -50,7 +50,7 @@
         <!-- 产物 JDK 版本 -->
         <java.version>8</java.version>
         <!-- 当前项目版本 -->
-        <revision>1.0.0</revision>
+        <revision>1.0.1</revision>
         <!-- FlattenMaven 插件版本，用于展平项目依赖关系 -->
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <!-- MavenCentral 推送插件版本 -->
