@@ -3,7 +3,7 @@ package com.buaoye.oss.common.configuration;
 import com.buaoye.oss.common.thread.BayThreadPool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
@@ -15,11 +15,11 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author Jayson Wu
  * @since 2024-12-16
  */
+@EnableAsync
 @Configuration
-public class BuaoyeOssConfiguration {
+public class BuaoyeCommonConfiguration {
 
-    @Primary
-    @Bean(name = BayThreadPool.ASYNC_EXECUTOR)
+    @Bean(name = BayThreadPool.BUAOYE_ASYNC_EXECUTOR)
     public Executor bayAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(BayThreadPool.CORE_POOL_SIZE);

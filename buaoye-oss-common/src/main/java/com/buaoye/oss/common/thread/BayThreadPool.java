@@ -3,9 +3,9 @@ package com.buaoye.oss.common.thread;
 import com.buaoye.oss.common.exception.BuaoyeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -19,7 +19,6 @@ import java.util.function.Supplier;
  * @author Jayson Wu
  * @since 2024-12-16
  */
-@Component
 public class BayThreadPool {
 
     private static final Logger log = LoggerFactory.getLogger(BayThreadPool.class);
@@ -42,15 +41,15 @@ public class BayThreadPool {
     /**
      * 线程的名称前缀
      */
-    public static final String NAME_PREFIX = "buaoye-thread-pool-";
+    public static final String NAME_PREFIX = "bay-thread-";
 
     /**
      * 线程池名称
      */
-    public static final String ASYNC_EXECUTOR = "bayAsyncExecutor";
+    public static final String BUAOYE_ASYNC_EXECUTOR = "bayAsyncExecutor";
 
-    @Resource
-    @Qualifier(ASYNC_EXECUTOR)
+    @Autowired
+    @Qualifier(BUAOYE_ASYNC_EXECUTOR)
     private Executor bayAsyncExecutor;
 
     /**
@@ -61,8 +60,8 @@ public class BayThreadPool {
             try {
                 runnable.run();
             } catch (Exception e) {
-                log.error("线程池任务分发异常");
-                throw new BuaoyeException("Execution failed", e);
+                log.error("Buaoye Oss - 线程池任务分发异常");
+                throw new BuaoyeException(e);
             }
         }, bayAsyncExecutor);
     }
@@ -75,8 +74,8 @@ public class BayThreadPool {
             try {
                 return supplier.get();
             } catch (Exception e) {
-                log.error("线程池任务分发异常");
-                throw new BuaoyeException("Execution failed", e);
+                log.error("Buaoye Oss - 线程池任务分发异常");
+                throw new BuaoyeException(e);
             }
         }, bayAsyncExecutor);
     }
@@ -85,8 +84,12 @@ public class BayThreadPool {
     public void shutdown() {
         if (bayAsyncExecutor instanceof ThreadPoolTaskExecutor) {
             ((ThreadPoolTaskExecutor) bayAsyncExecutor).shutdown();
-            log.info("线程池关闭");
+            log.info("Buaoye Oss - 线程池关闭");
         }
+    }
+
+    public Executor getBayAsyncExecutor() {
+        return bayAsyncExecutor;
     }
 
 }

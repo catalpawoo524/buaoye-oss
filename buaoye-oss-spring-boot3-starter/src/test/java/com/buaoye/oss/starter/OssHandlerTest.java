@@ -11,6 +11,7 @@ import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,8 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-
 /**
  * OSS 操作测试
  *
@@ -32,7 +31,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  */
 @SpringBootTest(
         classes = OssHandlerTestApplication.class,
-        webEnvironment = RANDOM_PORT
+        webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 @TestPropertySource(locations = "classpath:/test-application.properties")
 public class OssHandlerTest {

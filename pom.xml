@@ -71,8 +71,10 @@
         <spring-boot3.version>3.4.0</spring-boot3.version>
         <spring-framework6.version>6.2.1</spring-framework6.version>
         <slf4j-api2.version>2.0.9</slf4j-api2.version>
+        <aspectjrt.version>1.9.7</aspectjrt.version>
 
         <aws-s3.version>1.12.765</aws-s3.version>
+        <jackson-databind.version>2.14.3</jackson-databind.version>
     </properties>
 
     <build>

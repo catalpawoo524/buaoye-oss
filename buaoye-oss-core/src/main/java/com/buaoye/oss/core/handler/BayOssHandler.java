@@ -4,6 +4,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+import com.buaoye.oss.common.thread.BayThreadPool;
 import com.buaoye.oss.core.cache.BayOssCacheManager;
 import com.buaoye.oss.core.cache.definition.FileCacheDefinition;
 import com.buaoye.oss.core.client.BayOssClientManager;
@@ -13,7 +14,7 @@ import com.buaoye.oss.core.resp.UploadResp;
 import com.buaoye.oss.common.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
@@ -32,20 +32,15 @@ import java.util.stream.LongStream;
  * @author Jayson Wu
  * @since 2024-12-13
  */
-@Component
 public class BayOssHandler implements OssHandler {
 
     private static final Logger log = LoggerFactory.getLogger(BayOssHandler.class);
 
-    private final BayOssClientManager bayOssClientManager;
+    @Autowired
+    private BayOssClientManager bayOssClientManager;
 
-    @Resource
-    private Executor bayAsyncExecutor;
-
-    public BayOssHandler(BayOssClientManager bayOssClientManager, Executor bayAsyncExecutor) {
-        this.bayOssClientManager = bayOssClientManager;
-        this.bayAsyncExecutor = bayAsyncExecutor;
-    }
+    @Autowired
+    private BayThreadPool bayThreadPool;
 
     @Override
     public void createBucket(CannedAccessControlList accessControl, String bucketName, String endpointUrl, String keyId, String keySecret) {
@@ -67,7 +62,7 @@ public class BayOssHandler implements OssHandler {
     public void bucketExist(AmazonS3 client, String bucketName) {
         String bucketLocation = client.getBucketLocation(new GetBucketLocationRequest(bucketName));
         if (StringUtil.isNullOrUndefined(bucketLocation)) {
-            log.error("桶不存在或已删除，参数：client={}，bucket={}", client, bucketName);
+            log.error("Buaoye Oss - 桶不存在或已删除，参数：client={}，bucket={}", client, bucketName);
             throw new BuaoyeException("桶不存在或已删除");
         }
     }
@@ -78,7 +73,7 @@ public class BayOssHandler implements OssHandler {
         bucketExist(client, bucketName);
         try (ByteArrayInputStream inputStream = uploadReq.getInputStream()) {
             if (inputStream == null) {
-                log.error("上传文件失败，上传文件流为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
+                log.error("Buaoye Oss - 上传文件失败，上传文件流为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
                 throw new BuaoyeException("上传文件失败，上传文件流为空");
             }
             ObjectMetadata metadata = new ObjectMetadata();
@@ -89,14 +84,14 @@ public class BayOssHandler implements OssHandler {
             long starTime = System.currentTimeMillis();
             PutObjectResult result = client.putObject(bucketName, objectName, inputStream, metadata);
             if (result == null) {
-                log.error("上传文件失败，响应结果为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
+                log.error("Buaoye Oss - 上传文件失败，响应结果为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
                 throw new BuaoyeException("上传文件失败，响应结果为空");
             }
             long endTime = System.currentTimeMillis();
-            log.debug("上传文件执行成功，文件大小为{}字节，耗时{}毫秒", metadata.getContentLength(), endTime - starTime);
+            log.debug("Buaoye Oss - 上传文件执行成功，文件大小为{}字节，耗时{}毫秒", metadata.getContentLength(), endTime - starTime);
             return new UploadResp(client.getUrl(bucketName, objectName).toString(), metadata.getContentLength(), result.getContentMd5());
         } catch (IOException e) {
-            log.error("上传文件失败，获取上传文件流异常，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
+            log.error("Buaoye Oss - 上传文件失败，获取上传文件流异常，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
             throw new BuaoyeException(e);
         }
     }
@@ -113,16 +108,16 @@ public class BayOssHandler implements OssHandler {
                     S3ObjectInputStream inputStream = object.getObjectContent()
             ) {
                 if (inputStream == null) {
-                    log.error("下载文件至请求响应流失败，文件流为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
+                    log.error("Buaoye Oss - 下载文件至请求响应流失败，文件流为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
                     return;
                 }
                 File tempFile = content.add();
                 try (FileOutputStream fileStream = new FileOutputStream(tempFile)) {
                     IOUtils.copy(inputStream, fileStream);
                 }
-            } catch (IOException error) {
-                log.error("下载文件至请求响应流失败，流处理异常，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
-                throw new BuaoyeException(error);
+            } catch (IOException e) {
+                log.error("Buaoye Oss - 下载文件至请求响应流失败，流处理异常，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
+                throw new BuaoyeException(e);
             }
         }, metadata.getETag());
         fileCacheDefinition.read(outputStream);
@@ -142,7 +137,7 @@ public class BayOssHandler implements OssHandler {
                             .mapToObj(chunk -> CompletableFuture.supplyAsync(() -> {
                                 long start = chunk * chunkSize;
                                 long end = Math.min((chunk + 1) * chunkSize - 1, totalSize - 1);
-                                log.info("开始从对象存储下载分块，参数：start={}，end={}", start, end);
+                                log.info("Buaoye Oss - 开始从对象存储下载分块，参数：start={}，end={}", start, end);
                                 GetObjectRequest request = new GetObjectRequest(bucketName, objectName).withRange(start, end);
                                 File tempFile;
                                 try (
@@ -154,12 +149,12 @@ public class BayOssHandler implements OssHandler {
                                         IOUtils.copy(inputStream, fileStream);
                                     }
                                 } catch (IOException e) {
-                                    log.error("分块下载完整文件至请求响应流失败，流处理异常，参数：url={}，bucket={}，keyId={}，objectName={}，start={}，end={}", endpointUrl, bucketName, keyId, objectName, start, end);
+                                    log.error("Buaoye Oss - 分块下载完整文件至请求响应流失败，流处理异常，参数：url={}，bucket={}，keyId={}，objectName={}，start={}，end={}", endpointUrl, bucketName, keyId, objectName, start, end);
                                     throw new BuaoyeException(e);
                                 }
-                                log.info("完成从对象存储下载分块，参数：start={}，end={}", start, end);
+                                log.info("Buaoye Oss - 完成从对象存储下载分块，参数：start={}，end={}", start, end);
                                 return tempFile;
-                            }, bayAsyncExecutor))
+                            }, bayThreadPool.getBayAsyncExecutor()))
                             .toArray(CompletableFuture[]::new)
             );
             // 等待所有分块下载完成
@@ -186,7 +181,7 @@ public class BayOssHandler implements OssHandler {
         ) {
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
-            log.error("分块下载文件至请求响应流失败，流转换异常，参数：url={}，bucket={}，keyId={}，objectName={}，start={}，end={}", endpointUrl, bucketName, keyId, objectName, start, end);
+            log.error("Buaoye Oss - 分块下载文件至请求响应流失败，流转换异常，参数：url={}，bucket={}，keyId={}，objectName={}，start={}，end={}", endpointUrl, bucketName, keyId, objectName, start, end);
             throw new BuaoyeException(e);
         }
         return end - start + 1;

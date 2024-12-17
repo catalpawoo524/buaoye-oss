@@ -11,7 +11,6 @@ import com.buaoye.oss.common.exception.BuaoyeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Jayson Wu
  * @since 2024-12-13
  */
-@Component
 public class BayOssClientManager implements DisposableBean {
 
     private static final Logger log = LoggerFactory.getLogger(BayOssClientManager.class);
@@ -69,7 +67,7 @@ public class BayOssClientManager implements DisposableBean {
      */
     private AmazonS3 createClient(String endpointUrl, String keyId, String keySecret) {
         try {
-            log.info("未获取到可复用客户端连接，执行客户端创建，参数：endpointUrl={}，keyId={}", endpointUrl, keyId);
+            log.info("Buaoye Oss - 未获取到可复用客户端连接，执行客户端创建，参数：endpointUrl={}，keyId={}", endpointUrl, keyId);
             return AmazonS3ClientBuilder
                     .standard()
                     .withClientConfiguration(clientConfiguration)
@@ -79,7 +77,7 @@ public class BayOssClientManager implements DisposableBean {
                     .withChunkedEncodingDisabled(true)
                     .build();
         } catch (Exception e) {
-            log.error("客户端创建失败，方法执行异常");
+            log.error("Buaoye Oss - 客户端创建失败，方法执行异常");
             throw new BuaoyeException(e);
         }
     }
@@ -92,7 +90,7 @@ public class BayOssClientManager implements DisposableBean {
             Map<String, AmazonS3> serviceMap = CLIENT_CONNECTION_POOL.remove(endpointUrl);
             if (serviceMap != null) {
                 serviceMap.forEach((key, client) -> {
-                    log.info("执行客户端关闭，对应密钥：{}", key);
+                    log.info("Buaoye Oss - 执行客户端关闭，对应密钥：{}", key);
                     client.shutdown();
                 });
             }

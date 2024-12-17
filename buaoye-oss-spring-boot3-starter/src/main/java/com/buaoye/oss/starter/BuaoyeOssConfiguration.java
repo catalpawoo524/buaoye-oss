@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.util.concurrent.Executor;
-
 /**
  * 自动装配配置类
  *
@@ -32,8 +30,8 @@ public class BuaoyeOssConfiguration {
     }
 
     @Bean
-    public BayOssHandler bayOssHandler(BayOssClientManager bayOssClientManager, Executor bayAsyncExecutor) {
-        return new BayOssHandler(bayOssClientManager, bayAsyncExecutor);
+    public BayOssHandler bayOssHandler() {
+        return new BayOssHandler();
     }
 
     @Bean

@@ -6,7 +6,6 @@ import com.buaoye.oss.core.cache.property.BayOssCacheProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
  * @author Jayson Wu
  * @since 2024-12-13
  */
-@Component
 public class BayOssCacheTask {
 
     private static final Logger log = LoggerFactory.getLogger(BayOssCacheTask.class);
@@ -67,7 +65,7 @@ public class BayOssCacheTask {
                 BayOssCacheManager.getFileCacheDefinitions().remove(fileCacheDefinition.getId());
             }
         }
-        log.warn("AmazonS3文件缓存清理定时任务执行成功，当前使用缓存{}字节，限制缓存{}字节，本次清理缓存{}字节", totalSize.get(), bayOssCacheProperty.getMaxCacheSize(), clearSize);
+        log.info("Buaoye Oss - 文件缓存清理定时任务执行成功，当前使用缓存{}字节，限制缓存{}字节，本次清理缓存{}字节", totalSize.get(), bayOssCacheProperty.getMaxCacheSize(), clearSize);
     }
 
     /**
@@ -87,10 +85,10 @@ public class BayOssCacheTask {
                 for (File file : deleteFile.getFiles()) {
                     try {
                         if (!file.delete()) {
-                            log.warn("文件物理删除定时任务，文件删除执行失败，错误信息：path={}", file.getAbsolutePath());
+                            log.warn("Buaoye Oss - 文件物理删除定时任务，文件删除执行失败，错误信息：path={}", file.getAbsolutePath());
                         }
                     } catch (Exception e) {
-                        log.warn("文件物理删除定时任务，文件删除执行异常，错误信息：path={}", file.getAbsolutePath(), e);
+                        log.warn("Buaoye Oss - 文件物理删除定时任务，文件删除执行异常，错误信息：path={}", file.getAbsolutePath(), e);
                     }
                 }
                 iterator.remove();

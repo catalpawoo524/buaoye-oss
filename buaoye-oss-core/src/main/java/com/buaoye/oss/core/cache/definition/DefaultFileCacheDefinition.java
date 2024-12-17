@@ -41,11 +41,11 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
             this.writeLock.lockInterruptibly();
             if (this.cacheExist()) {
                 if (eTag == null) {
-                    log.info("载入数据中，存在可用的缓存数据：id={}，eTag={}", this.id, this.eTag);
+                    log.info("Buaoye Oss - 载入数据中，存在可用的缓存数据：id={}，eTag={}", this.id, this.eTag);
                     return;
                 } else if (this.eTag != null && this.eTag.equals(eTag)) {
                     // 数据存在且 ETag 匹配上，直接使用缓存
-                    log.info("载入数据中，存在可用的缓存数据，参数：id={}，eTag={}", this.id, eTag);
+                    log.info("Buaoye Oss - 载入数据中，存在可用的缓存数据，参数：id={}，eTag={}", this.id, eTag);
                     return;
                 }
                 // 表明线上文件被修改过，清除本地缓存
@@ -54,7 +54,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
             this.eTag = eTag;
             write.process(this.content);
         } catch (InterruptedException e) {
-            log.error("载入数据失败，锁获取中断，参数：id={}，eTag={}", this.id, eTag);
+            log.error("Buaoye Oss - 载入数据失败，锁获取中断，参数：id={}，eTag={}", this.id, eTag);
             throw new BuaoyeException(e);
         } catch (Exception e) {
             this.content.logicDelete();
@@ -72,7 +72,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
     @Override
     public void read(OutputStream outputStream) {
         if (this.content.getFiles() == null || this.content.getFiles().isEmpty()) {
-            log.error("读取文件流失败，文件内容为空，参数：id={}", this.id);
+            log.error("Buaoye Oss - 读取文件流失败，文件内容为空，参数：id={}", this.id);
             throw new BuaoyeException("读取文件流失败，文件内容为空");
         }
         try (WritableByteChannel outputChannel = Channels.newChannel(outputStream)) {
@@ -82,7 +82,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
                 }
             }
         } catch (IOException e) {
-            log.error("读取文件流失败，合并临时文件执行异常，参数：id={}", this.id);
+            log.error("Buaoye Oss - 读取文件流失败，合并临时文件执行异常，参数：id={}", this.id);
             throw new BuaoyeException(e);
         }
     }
