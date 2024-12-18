@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.buaoye.oss.common.configuration.BuaoyeCommonConfiguration,\
+com.buaoye.oss.starter.BuaoyeOssConfiguration
