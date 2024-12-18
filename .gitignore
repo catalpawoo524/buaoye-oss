@@ -39,3 +39,4 @@ build/
 /.idea/
 .flattened-pom.xml
 /buaoye-oss-spring-boot3-starter/src/test/resources/test-application.properties
+/buaoye-oss-spring-boot2-starter/src/test/resources/test-application.properties
