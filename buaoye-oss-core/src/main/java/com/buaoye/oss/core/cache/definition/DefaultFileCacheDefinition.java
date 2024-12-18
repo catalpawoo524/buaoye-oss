@@ -41,11 +41,11 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
             this.writeLock.lockInterruptibly();
             if (this.cacheExist()) {
                 if (eTag == null) {
-                    log.info("Buaoye Oss - 载入数据中，存在可用的缓存数据：id={}，eTag={}", this.id, this.eTag);
+                    log.debug("Buaoye Oss - 载入数据中，存在可用的缓存数据：id={}，eTag={}", this.id, this.eTag);
                     return;
                 } else if (this.eTag != null && this.eTag.equals(eTag)) {
                     // 数据存在且 ETag 匹配上，直接使用缓存
-                    log.info("Buaoye Oss - 载入数据中，存在可用的缓存数据，参数：id={}，eTag={}", this.id, eTag);
+                    log.debug("Buaoye Oss - 载入数据中，存在可用的缓存数据，参数：id={}，eTag={}", this.id, eTag);
                     return;
                 }
                 // 表明线上文件被修改过，清除本地缓存

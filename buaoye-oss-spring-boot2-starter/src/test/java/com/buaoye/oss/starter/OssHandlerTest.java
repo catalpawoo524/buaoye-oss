@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * OSS 操作测试
@@ -75,7 +76,8 @@ public class OssHandlerTest {
             throw new BuaoyeException("OSS 操作测试，桶获取失败");
         }
         // 客户端复用测试
-        if (bayOssClientManager.getClient(endpointUrl, keyId, keySecret) == null) {
+        AmazonS3 reuseClient = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        if (reuseClient == null || !Objects.equals(reuseClient, client)) {
             throw new BuaoyeException("OSS 操作测试，客户端复用测试失败");
         }
         log.info("OSS 操作测试，获取到桶{}", bucketLocation);

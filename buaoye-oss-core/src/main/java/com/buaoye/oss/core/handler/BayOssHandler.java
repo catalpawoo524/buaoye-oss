@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Resource;
 import java.io.*;
 import java.net.URL;
 import java.util.Arrays;
@@ -137,7 +136,7 @@ public class BayOssHandler implements OssHandler {
                             .mapToObj(chunk -> CompletableFuture.supplyAsync(() -> {
                                 long start = chunk * chunkSize;
                                 long end = Math.min((chunk + 1) * chunkSize - 1, totalSize - 1);
-                                log.info("Buaoye Oss - 开始从对象存储下载分块，参数：start={}，end={}", start, end);
+                                log.debug("Buaoye Oss - 开始从对象存储下载分块，参数：start={}，end={}", start, end);
                                 GetObjectRequest request = new GetObjectRequest(bucketName, objectName).withRange(start, end);
                                 File tempFile;
                                 try (
@@ -152,7 +151,7 @@ public class BayOssHandler implements OssHandler {
                                     log.error("Buaoye Oss - 分块下载完整文件至请求响应流失败，流处理异常，参数：url={}，bucket={}，keyId={}，objectName={}，start={}，end={}", endpointUrl, bucketName, keyId, objectName, start, end);
                                     throw new BuaoyeException(e);
                                 }
-                                log.info("Buaoye Oss - 完成从对象存储下载分块，参数：start={}，end={}", start, end);
+                                log.debug("Buaoye Oss - 完成从对象存储下载分块，参数：start={}，end={}", start, end);
                                 return tempFile;
                             }, bayThreadPool.getBayAsyncExecutor()))
                             .toArray(CompletableFuture[]::new)

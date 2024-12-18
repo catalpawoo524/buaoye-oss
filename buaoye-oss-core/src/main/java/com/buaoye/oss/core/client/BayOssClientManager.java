@@ -74,7 +74,7 @@ public class BayOssClientManager implements DisposableBean {
      */
     private ProxyClient createClient(String endpointUrl, String keyId, String keySecret) {
         try {
-            log.info("Buaoye Oss - 未获取到可复用客户端连接，执行客户端创建，参数：endpointUrl={}，keyId={}", endpointUrl, keyId);
+            log.debug("Buaoye Oss - 未获取到可复用客户端连接，执行客户端创建，参数：endpointUrl={}，keyId={}", endpointUrl, keyId);
             return new ProxyClient(
                     AmazonS3ClientBuilder
                             .standard()
@@ -137,7 +137,7 @@ public class BayOssClientManager implements DisposableBean {
             Map<String, ProxyClient> serviceMap = CLIENT_CONNECTION_POOL.remove(endpointUrl);
             if (serviceMap != null) {
                 serviceMap.forEach((key, client) -> {
-                    log.info("Buaoye Oss - 执行客户端关闭，对应密钥：{}", key);
+                    log.debug("Buaoye Oss - 执行客户端关闭，对应密钥：{}", key);
                     client.shutdown();
                 });
             }

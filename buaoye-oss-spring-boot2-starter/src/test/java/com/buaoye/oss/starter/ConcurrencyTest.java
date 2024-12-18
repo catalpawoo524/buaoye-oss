@@ -66,8 +66,6 @@ public class ConcurrencyTest {
 
     @Test
     public void concurrencyTest() {
-        // 获取客户端测试
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
         // 多文件并发下载测试
         long startTime = System.currentTimeMillis();
         CompletableFuture<Void> allTasks = CompletableFuture.allOf(
