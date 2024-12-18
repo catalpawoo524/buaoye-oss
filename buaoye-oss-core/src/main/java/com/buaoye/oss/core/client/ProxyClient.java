@@ -20,7 +20,7 @@ public class ProxyClient {
     /**
      * 创建时间
      */
-    private final LocalDateTime createTime = LocalDateTime.now();;
+    private final LocalDateTime createTime = LocalDateTime.now();
 
     /**
      * 最近复用时间

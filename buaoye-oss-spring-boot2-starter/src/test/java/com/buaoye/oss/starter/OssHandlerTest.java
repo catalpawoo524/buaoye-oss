@@ -2,11 +2,11 @@ package com.buaoye.oss.starter;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetBucketLocationRequest;
+import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.util.StringUtil;
 import com.buaoye.oss.core.cache.BayOssCacheManager;
 import com.buaoye.oss.core.client.BayOssClientManager;
-import com.buaoye.oss.common.exception.BuaoyeException;
 import com.buaoye.oss.core.handler.BayOssHandler;
-import com.buaoye.oss.common.util.StringUtil;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

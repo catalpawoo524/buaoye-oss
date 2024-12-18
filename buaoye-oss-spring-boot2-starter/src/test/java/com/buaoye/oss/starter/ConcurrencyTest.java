@@ -1,9 +1,7 @@
 package com.buaoye.oss.starter;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.buaoye.oss.common.exception.BuaoyeException;
 import com.buaoye.oss.common.thread.BayThreadPool;
-import com.buaoye.oss.core.client.BayOssClientManager;
 import com.buaoye.oss.core.handler.BayOssHandler;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -71,7 +69,7 @@ public class ConcurrencyTest {
                             long threadStartTime = System.currentTimeMillis();
                             log.info("并发测试执行中，正在下载第{}个文件", num);
                             // 执行任务的代码
-                            File downloadFile = new File("./" + num +"_" + filename);
+                            File downloadFile = new File("./" + num + "_" + filename);
                             downloadFile.deleteOnExit();
                             try (FileOutputStream outputStream = new FileOutputStream(downloadFile)) {
                                 bayOssHandler.downloadFile(endpointUrl, bucketName, keyId, keySecret, objectName, filename, fileId, 3 * 1024, outputStream);
@@ -81,7 +79,7 @@ public class ConcurrencyTest {
                             }
                             log.info("并发测试执行中，第{}个文件下载完成，消耗时长{}毫秒", num, System.currentTimeMillis() - threadStartTime);
                             return downloadFile;
-                            }, bayThreadPool.getBayAsyncExecutor()))
+                        }, bayThreadPool.getBayAsyncExecutor()))
                         .toArray(CompletableFuture[]::new)
         );
         allTasks.join();

@@ -26,7 +26,7 @@ public class UploadReq {
         }
         this.fileObj = fileObj;
     }
-    
+
     /**
      * 获取文件输入流，重写该方法以支持更多文件类型
      *
@@ -44,6 +44,6 @@ public class UploadReq {
             return new ByteArrayInputStream(IOUtils.toByteArray(multipartFile.getInputStream()));
         }
         throw new BuaoyeException("获取文件输入流失败，无法解析的文件类型");
-    };
-    
+    }
+
 }

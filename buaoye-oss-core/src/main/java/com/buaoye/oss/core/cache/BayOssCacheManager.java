@@ -34,7 +34,7 @@ public class BayOssCacheManager {
      * 创建文件缓存定义类
      *
      * @param filename 文件名
-     * @param id     主键ID
+     * @param id       主键ID
      * @return 文件缓存定义类
      */
     public static FileCacheDefinition create(String filename, String id) {
@@ -50,9 +50,9 @@ public class BayOssCacheManager {
      * 延迟删除
      *
      * @param deleteTime 删除时间
-     * @param files 文件列表
+     * @param files      文件列表
      */
-    public static void delayDelete(LocalDateTime deleteTime, Collection<File> files){
+    public static void delayDelete(LocalDateTime deleteTime, Collection<File> files) {
         if (files == null || files.isEmpty()) {
             return;
         }

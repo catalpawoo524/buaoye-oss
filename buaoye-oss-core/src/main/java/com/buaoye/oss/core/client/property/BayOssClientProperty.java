@@ -52,5 +52,5 @@ public class BayOssClientProperty {
         this.socketTimeout = socketTimeout;
         return this;
     }
-    
+
 }
