@@ -35,9 +35,6 @@ public class ConcurrencyTest {
     private static final Logger log = LoggerFactory.getLogger(ConcurrencyTest.class);
 
     @Autowired
-    private BayOssClientManager bayOssClientManager;
-
-    @Autowired
     private BayOssHandler bayOssHandler;
 
     @Autowired
