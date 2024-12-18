@@ -12,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -29,7 +27,7 @@ import java.util.List;
  * @since 2024-12-16
  */
 @SpringBootTest(
-        classes = OssHandlerTestApplication.class,
+        classes = TestApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 @TestPropertySource(locations = "classpath:/test-application.properties")
@@ -68,6 +66,9 @@ public class OssHandlerTest {
     public void ossHandlerTest() {
         // 获取客户端测试
         AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        // 主动断连测试
+        client.shutdown();
+        client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
         // 获取桶测试
         String bucketLocation = client.getBucketLocation(new GetBucketLocationRequest(bucketName));
         if (StringUtil.isNullOrUndefined(bucketLocation)) {
@@ -96,6 +97,8 @@ public class OssHandlerTest {
             log.error("OSS 操作测试异常，缓存文件测试异常");
             throw new BuaoyeException(e);
         }
+        // 客户端统计测试
+        log.info("OSS 操作测试，客户端统计信息{}", bayOssClientManager.getStatistic().toString());
         // 缓存回收测试
         BayOssCacheManager.create(filename, fileId).useContent(content -> {
             List<File> files = content.getFiles();
@@ -107,15 +110,6 @@ public class OssHandlerTest {
             }
             log.info("OSS 操作测试，物理删除后内存数据中文件存在结果为{}", files.get(0).exists());
         });
-    }
-
-}
-
-@SpringBootApplication
-class OssHandlerTestApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(OssHandlerTestApplication.class, args);
     }
 
 }

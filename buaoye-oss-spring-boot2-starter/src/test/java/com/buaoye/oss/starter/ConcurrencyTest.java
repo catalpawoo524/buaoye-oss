@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
@@ -28,7 +26,7 @@ import java.util.stream.LongStream;
  * @since 2024-12-17
  */
 @SpringBootTest(
-        classes = OssHandlerTestApplication.class,
+        classes = TestApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.NONE
 )
 @TestPropertySource(locations = "classpath:/test-application.properties")
@@ -98,15 +96,6 @@ public class ConcurrencyTest {
                 new File("./2_" + filename).length(),
                 new File("./3_" + filename).length()
         );
-    }
-
-}
-
-@SpringBootApplication
-class ConcurrencyTestApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(ConcurrencyTestApplication.class, args);
     }
 
 }
