@@ -43,6 +43,18 @@
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>${aws-s3.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>${spring-boot2.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-framework5.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
 </project>

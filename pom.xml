@@ -64,17 +64,21 @@
         <!-- Maven 编译器插件版本 -->
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 
-        <!-- 项目依赖 -->
-        <spring-boot2.version>2.7.18</spring-boot2.version>
-        <spring-framework5.version>5.3.30</spring-framework5.version>
-        <slf4j-api1.version>1.7.36</slf4j-api1.version>
-        <spring-boot3.version>3.4.0</spring-boot3.version>
-        <spring-framework6.version>6.2.1</spring-framework6.version>
-        <slf4j-api2.version>2.0.9</slf4j-api2.version>
-        <aspectjrt.version>1.9.7</aspectjrt.version>
+        <!-- SpringBoot2 对应版本 -->
+        <spring-boot2.version>2.0.0.RELEASE</spring-boot2.version>
+        <spring-framework5.version>5.0.0.RELEASE</spring-framework5.version>
+        <slf4j-api1.version>1.7.25</slf4j-api1.version>
+        <javax-annotation.version>1.3.2</javax-annotation.version>
+        <logback-classic2.version>1.2.3</logback-classic2.version>
+
+        <!-- SpringBoot3 对应版本 -->
+        <spring-boot3.version>3.0.0</spring-boot3.version>
+        <spring-framework6.version>6.0.0</spring-framework6.version>
+        <slf4j-api2.version>2.0.0</slf4j-api2.version>
+        <jackson-databind.version>2.14.2</jackson-databind.version>
+        <logback-classic3.version>1.4.6</logback-classic3.version>
 
         <aws-s3.version>1.12.765</aws-s3.version>
-        <jackson-databind.version>2.14.3</jackson-databind.version>
     </properties>
 
     <build>
