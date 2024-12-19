@@ -2,13 +2,7 @@ package com.buaoye.oss.core.cache;
 
 import com.buaoye.oss.core.cache.definition.DefaultFileCacheDefinition;
 import com.buaoye.oss.core.cache.definition.FileCacheDefinition;
-import com.buaoye.oss.core.cache.definition.FileDeleteDefinition;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +20,6 @@ public class BayOssCacheManager {
     private static final Map<String, FileCacheDefinition> FILE_CACHE_DEFINITIONS = new ConcurrentHashMap<>();
 
     /**
-     * 待物理删除文件列表
-     */
-    private static final List<FileDeleteDefinition> FILE_DELETE_DEFINITIONS = new ArrayList<>();
-
-    /**
      * 创建文件缓存定义类
      *
      * @param filename 文件名
@@ -46,28 +35,8 @@ public class BayOssCacheManager {
         return defaultFileCacheDefinition.access();
     }
 
-    /**
-     * 延迟删除
-     *
-     * @param deleteTime 删除时间
-     * @param files      文件列表
-     */
-    public static void delayDelete(LocalDateTime deleteTime, Collection<File> files) {
-        if (files == null || files.isEmpty()) {
-            return;
-        }
-        if (deleteTime == null) {
-            deleteTime = LocalDateTime.now();
-        }
-        FILE_DELETE_DEFINITIONS.add(new FileDeleteDefinition(deleteTime, new ArrayList<>(files)));
-    }
-
     public static Map<String, FileCacheDefinition> getFileCacheDefinitions() {
         return FILE_CACHE_DEFINITIONS;
-    }
-
-    public static List<FileDeleteDefinition> getFileDeleteDefinitions() {
-        return FILE_DELETE_DEFINITIONS;
     }
 
 }

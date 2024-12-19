@@ -56,7 +56,7 @@ public class BayOssClientManager implements DisposableBean {
         // 根据 keyId 获取或创建 AmazonS3
         ProxyClient client = serviceMap.computeIfAbsent(keyId, k -> createClient(endpointUrl, keyId, keySecret));
         // 测试连接是否正常
-        if (!client.isConn()) {
+        if (client.isDisconnect()) {
             log.warn("Buaoye Oss - 获取到的客户端已断开，即将创建新的连接，参数：endpointUrl={}，keyId={}", endpointUrl, keyId);
             serviceMap.remove(keyId);
             client = serviceMap.computeIfAbsent(keyId, k -> createClient(endpointUrl, keyId, keySecret));
@@ -113,7 +113,7 @@ public class BayOssClientManager implements DisposableBean {
                 if (clientStatistic.getLongestUnusedClient() == null || (client.getReuseTime() != null && clientStatistic.getLongestUnusedClient().getReuseTime().isAfter(client.getReuseTime()))) {
                     clientStatistic.setLongestUnusedClient(client);
                 }
-                if (!client.isConn()) {
+                if (client.isDisconnect()) {
                     clientStatistic.getDisconnectClients().add(client);
                 }
             });

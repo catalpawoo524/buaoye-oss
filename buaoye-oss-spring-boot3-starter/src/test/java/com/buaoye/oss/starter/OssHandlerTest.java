@@ -3,6 +3,7 @@ package com.buaoye.oss.starter;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetBucketLocationRequest;
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.thread.BayThreadPool;
 import com.buaoye.oss.common.util.StringUtil;
 import com.buaoye.oss.core.cache.BayOssCacheManager;
 import com.buaoye.oss.core.client.BayOssClientManager;
@@ -20,6 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.LongStream;
 
 /**
  * OSS 操作测试
@@ -41,6 +44,9 @@ public class OssHandlerTest {
 
     @Autowired
     private BayOssHandler bayOssHandler;
+
+    @Autowired
+    private BayThreadPool bayThreadPool;
 
     @Value("${endpointUrl}")
     private String endpointUrl;
@@ -101,17 +107,24 @@ public class OssHandlerTest {
         }
         // 客户端统计测试
         log.info("OSS 操作测试，客户端统计信息{}", bayOssClientManager.getStatistic().toString());
-        // 缓存回收测试
-        BayOssCacheManager.create(filename, fileId).useContent(content -> {
-            List<File> files = content.getFiles();
-            content.logicDelete();
-            log.info("OSS 操作测试，逻辑删除后内存数据中文件存在结果为{}", files.get(0).exists());
-            // 主动执行缓存清除
-            for (File file : BayOssCacheManager.getFileDeleteDefinitions().get(0).getFiles()) {
-                file.delete();
-            }
-            log.info("OSS 操作测试，物理删除后内存数据中文件存在结果为{}", files.get(0).exists());
-        });
+        // 并发缓存回收测试
+        CompletableFuture<Void> allTasks = CompletableFuture.allOf(
+                LongStream.range(1, 4)
+                        .mapToObj(num -> CompletableFuture.supplyAsync(() -> {
+                            BayOssCacheManager.create(filename, fileId).useContent((definition, content) -> {
+                                content.startUsing();
+                                List<File> files = content.getFiles();
+                                definition.delete();
+                                log.info("并发缓存回收测试，线程{}逻辑删除后内存数据中文件存在结果为{}", num, files.get(0).exists());
+                                // 主动执行缓存清除
+                                content.endUsing();
+                                log.info("并发缓存回收测试，线程{}物理删除后内存数据中文件存在结果为{}", num, files.get(0).exists());
+                            });
+                            return true;
+                        }, bayThreadPool.getBayAsyncExecutor()))
+                        .toArray(CompletableFuture[]::new)
+        );
+        allTasks.join();
     }
 
 }

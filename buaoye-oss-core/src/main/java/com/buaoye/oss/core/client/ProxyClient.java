@@ -70,18 +70,18 @@ public class ProxyClient {
     }
 
     /**
-     * 获取连接状态
+     * 检查是否断连
      *
-     * @return True：正常，False：已断开
+     * @return True：已断开，False：正常
      */
-    public boolean isConn() {
+    public boolean isDisconnect() {
         // 测试连接是否正常
         try {
             client.listBuckets();
         } catch (IllegalStateException e) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public LocalDateTime getCreateTime() {

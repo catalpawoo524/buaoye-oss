@@ -59,7 +59,7 @@ public abstract class FileCacheDefinition {
 
     @FunctionalInterface
     public interface Write {
-        void process(FileContent fileContent);
+        void process(FileCacheDefinition definition, FileContent fileContent);
     }
 
     /**
@@ -103,11 +103,15 @@ public abstract class FileCacheDefinition {
     public abstract void read(OutputStream outputStream);
 
     /**
-     * 逻辑删除文件内容
+     * 删除文件内容
      *
      * @return 删除结果（为空表示失败）
      */
-    public abstract Long logicDelete();
+    public long delete() {
+        long filesize = this.content.updateDeleteTag();
+        this.content = new FileContent();
+        return filesize;
+    }
 
     public String getId() {
         return id;

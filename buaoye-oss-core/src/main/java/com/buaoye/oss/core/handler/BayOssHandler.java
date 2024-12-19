@@ -101,7 +101,7 @@ public class BayOssHandler implements OssHandler {
         AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
         bucketExist(client, bucketName);
         ObjectMetadata metadata = client.getObjectMetadata(bucketName, objectName);
-        fileCacheDefinition.load((content) -> {
+        fileCacheDefinition.load((definition, content) -> {
             try (
                     S3Object object = client.getObject(bucketName, objectName);
                     S3ObjectInputStream inputStream = object.getObjectContent()
@@ -130,7 +130,7 @@ public class BayOssHandler implements OssHandler {
         ObjectMetadata metadata = client.getObjectMetadata(bucketName, objectName);
         long totalSize = metadata.getContentLength();
         long numChunks = (totalSize + chunkSize - 1) / chunkSize;
-        fileCacheDefinition.load((content) -> {
+        fileCacheDefinition.load((definition, content) -> {
             CompletableFuture<Void> allTasks = CompletableFuture.allOf(
                     LongStream.range(0, numChunks)
                             .mapToObj(chunk -> CompletableFuture.supplyAsync(() -> {

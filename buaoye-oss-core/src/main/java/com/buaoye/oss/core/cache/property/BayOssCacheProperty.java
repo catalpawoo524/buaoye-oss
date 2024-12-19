@@ -17,11 +17,6 @@ public class BayOssCacheProperty {
     private int cacheTime = 60 * 24 * 5;
 
     /**
-     * 物理删除延迟时间（单位：分钟）
-     */
-    private int physicalDeleteDelayTime = 10;
-
-    /**
      * 最大缓存大小（单位：字节）
      */
     private long maxCacheSize = 1024L * 1024 * 1024 * 5;
@@ -32,15 +27,6 @@ public class BayOssCacheProperty {
 
     public BayOssCacheProperty setCacheTime(int cacheTime) {
         this.cacheTime = cacheTime;
-        return this;
-    }
-
-    public int getPhysicalDeleteDelayTime() {
-        return physicalDeleteDelayTime;
-    }
-
-    public BayOssCacheProperty setPhysicalDeleteDelayTime(int physicalDeleteDelayTime) {
-        this.physicalDeleteDelayTime = physicalDeleteDelayTime;
         return this;
     }
 

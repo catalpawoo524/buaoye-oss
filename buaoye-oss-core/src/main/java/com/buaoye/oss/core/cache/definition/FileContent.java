@@ -1,16 +1,18 @@
 package com.buaoye.oss.core.cache.definition;
 
 import com.buaoye.oss.common.exception.BuaoyeException;
-import com.buaoye.oss.core.cache.BayOssCacheManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -21,10 +23,22 @@ import java.util.stream.Collectors;
  */
 public class FileContent {
 
+    private static final Logger log = LoggerFactory.getLogger(FileContent.class);
+
     /**
      * 文件列表
      */
     private final Map<Long, File> files = new ConcurrentHashMap<>();
+
+    /**
+     * 使用标志
+     */
+    private final BlockingQueue<Integer> useTag = new LinkedBlockingQueue<>();
+
+    /**
+     * 删除标志（false：未删除，true：删除）
+     */
+    private boolean deleteTag = false;
 
     /**
      * 新增文件
@@ -49,20 +63,51 @@ public class FileContent {
      * @return 文件对象
      */
     public File add() {
-        return add(1L);
+        return add(1);
     }
 
     /**
-     * 逻辑删除（此时存储的物理文件未被删除，正在读取的线程仍能正常执行）
+     * 使用开始
      */
-    public long logicDelete() {
-        long filesize = 0;
-        for (File file : this.files.values()) {
-            filesize += file.length();
-        }
-        BayOssCacheManager.delayDelete(LocalDateTime.now(), this.files.values());
-        this.files.clear();
+    public void startUsing() {
+        useTag.offer(1);
+    }
+
+    /**
+     * 使用结束
+     */
+    public void endUsing() {
+        useTag.poll();
+        this.deleteIfNeed();
+    }
+
+    /**
+     * 删除（更新删除标志）
+     *
+     * @return 文件大小
+     */
+    public long updateDeleteTag() {
+        long filesize = getTotalSize();
+        this.deleteTag = true;
+        this.deleteIfNeed();
         return filesize;
+    }
+
+    /**
+     * 按需删除
+     */
+    private void deleteIfNeed() {
+        if (useTag.isEmpty() && deleteTag) {
+            for (File file : files.values()) {
+                try {
+                    if (!file.delete()) {
+                        log.warn("Buaoye Oss - 文件物理删除，文件删除执行失败，错误信息：path={}", file.getAbsolutePath());
+                    }
+                } catch (Exception e) {
+                    log.warn("Buaoye Oss - 文件物理删除，文件删除执行异常，错误信息：path={}", file.getAbsolutePath(), e);
+                }
+            }
+        }
     }
 
     /**

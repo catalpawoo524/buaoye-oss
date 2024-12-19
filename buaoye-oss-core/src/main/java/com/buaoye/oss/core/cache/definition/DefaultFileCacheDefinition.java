@@ -49,15 +49,15 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
                     return;
                 }
                 // 表明线上文件被修改过，清除本地缓存
-                this.content.logicDelete();
+                this.delete();
             }
             this.eTag = eTag;
-            write.process(this.content);
+            write.process(this, this.content);
         } catch (InterruptedException e) {
             log.error("Buaoye Oss - 载入数据失败，锁获取中断，参数：id={}，eTag={}", this.id, eTag);
             throw new BuaoyeException(e);
         } catch (Exception e) {
-            this.content.logicDelete();
+            this.delete();
             throw e;
         } finally {
             this.writeLock.unlock();
@@ -66,7 +66,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
 
     @Override
     public void useContent(Write write) {
-        write.process(this.content);
+        write.process(this, this.content);
     }
 
     @Override
@@ -76,6 +76,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
             throw new BuaoyeException("读取文件流失败，文件内容为空");
         }
         try (WritableByteChannel outputChannel = Channels.newChannel(outputStream)) {
+            this.content.startUsing();
             for (File file : this.content.getFiles()) {
                 try (FileChannel inputChannel = new FileInputStream(file).getChannel()) {
                     inputChannel.transferTo(0, inputChannel.size(), outputChannel);
@@ -84,17 +85,9 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
         } catch (IOException e) {
             log.error("Buaoye Oss - 读取文件流失败，合并临时文件执行异常，参数：id={}", this.id);
             throw new BuaoyeException(e);
+        } finally {
+            this.content.endUsing();
         }
-    }
-
-    @Override
-    public Long logicDelete() {
-        if (this.writeLock.tryLock() && this.cacheExist()) {
-            long filesize = this.content.logicDelete();
-            this.writeLock.unlock();
-            return filesize;
-        }
-        return null;
     }
 
 }
