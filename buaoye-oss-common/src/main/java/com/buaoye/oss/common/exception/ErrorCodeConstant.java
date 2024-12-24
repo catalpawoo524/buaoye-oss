@@ -29,6 +29,6 @@ public class ErrorCodeConstant {
     public static final BayErrorCode OSS_FILE_UPLOAD_EXCEPTION = BayErrorCode.create(2_003_001_002, "上传文件失败");
     public static final BayErrorCode OSS_FILE_DOWNLOAD_EXCEPTION = BayErrorCode.create(2_003_001_003, "下载文件失败");
     public static final BayErrorCode OSS_FILE_UPLOAD_NULL_EXCEPTION = BayErrorCode.create(2_003_001_004, "文件对象为空");
-    public static final BayErrorCode OSS_FILE_UPLOAD_UNKNOW_EXCEPTION = BayErrorCode.create(2_003_001_005, "无法解析的文件类型");
+    public static final BayErrorCode OSS_FILE_UPLOAD_UNKNOWN_EXCEPTION = BayErrorCode.create(2_003_001_005, "无法解析的文件类型");
 
 }

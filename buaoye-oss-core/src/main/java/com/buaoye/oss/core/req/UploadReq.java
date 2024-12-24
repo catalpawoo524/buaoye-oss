@@ -44,7 +44,7 @@ public class UploadReq {
             // 多媒体文件，使用流式复制而不是一次性读取文件
             return new ByteArrayInputStream(IOUtils.toByteArray(multipartFile.getInputStream()));
         }
-        throw new BuaoyeException(ErrorCodeConstant.OSS_FILE_UPLOAD_UNKNOW_EXCEPTION);
+        throw new BuaoyeException(ErrorCodeConstant.OSS_FILE_UPLOAD_UNKNOWN_EXCEPTION);
     }
 
 }
