@@ -1,6 +1,7 @@
 package com.buaoye.oss.core.cache.definition;
 
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.exception.ErrorCodeConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class FileContent {
             tempFile.deleteOnExit();
             return tempFile;
         } catch (IOException e) {
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(e, ErrorCodeConstant.FILE_CACHE_CREATE_EXCEPTION);
         }
     }
 

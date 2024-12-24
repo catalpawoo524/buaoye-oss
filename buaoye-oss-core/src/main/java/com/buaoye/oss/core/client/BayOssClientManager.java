@@ -7,6 +7,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.exception.ErrorCodeConstant;
 import com.buaoye.oss.core.client.property.BayOssClientProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,7 @@ public class BayOssClientManager implements DisposableBean {
             );
         } catch (Exception e) {
             log.error("Buaoye Oss - 客户端创建失败，方法执行异常");
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(e, ErrorCodeConstant.CLIENT_CREATE_EXCEPTION);
         }
     }
 

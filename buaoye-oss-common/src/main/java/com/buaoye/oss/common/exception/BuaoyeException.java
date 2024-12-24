@@ -22,12 +22,22 @@ public class BuaoyeException extends RuntimeException implements Serializable {
      */
     private Object data;
 
+    public BuaoyeException(BayErrorCode errorCode) {
+        super(errorCode.getMsg());
+        status = errorCode.getCode();
+    }
+
     public BuaoyeException(String message) {
         super(message);
     }
 
     public BuaoyeException(Throwable throwable) {
         super(throwable);
+    }
+
+    public BuaoyeException(Throwable throwable, BayErrorCode errorCode) {
+        super(errorCode.getMsg(), throwable);
+        status = errorCode.getCode();
     }
 
     public BuaoyeException(String message, int status) {

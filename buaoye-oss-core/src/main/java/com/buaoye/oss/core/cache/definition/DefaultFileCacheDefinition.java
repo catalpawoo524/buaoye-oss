@@ -1,6 +1,7 @@
 package com.buaoye.oss.core.cache.definition;
 
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.exception.ErrorCodeConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
             write.process(this, this.content);
         } catch (InterruptedException e) {
             log.error("Buaoye Oss - 载入数据失败，锁获取中断，参数：id={}，eTag={}", this.id, eTag);
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(ErrorCodeConstant.FILE_CACHE_LOAD_EXCEPTION);
         } catch (Exception e) {
             this.delete();
             throw e;
@@ -73,7 +74,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
     public void read(OutputStream outputStream) {
         if (this.content.getFiles() == null || this.content.getFiles().isEmpty()) {
             log.error("Buaoye Oss - 读取文件流失败，文件内容为空，参数：id={}", this.id);
-            throw new BuaoyeException("读取文件流失败，文件内容为空");
+            throw new BuaoyeException(ErrorCodeConstant.FILE_CACHE_LOCK_EXCEPTION);
         }
         try (WritableByteChannel outputChannel = Channels.newChannel(outputStream)) {
             this.content.startUsing();
@@ -84,7 +85,7 @@ public class DefaultFileCacheDefinition extends FileCacheDefinition {
             }
         } catch (IOException e) {
             log.error("Buaoye Oss - 读取文件流失败，合并临时文件执行异常，参数：id={}", this.id);
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(e, ErrorCodeConstant.FILE_CACHE_LOCK_EXCEPTION);
         } finally {
             this.content.endUsing();
         }

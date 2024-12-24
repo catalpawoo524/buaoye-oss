@@ -3,6 +3,7 @@ package com.buaoye.oss.starter;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetBucketLocationRequest;
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.exception.ErrorCodeConstant;
 import com.buaoye.oss.common.thread.BayThreadPool;
 import com.buaoye.oss.common.util.StringUtil;
 import com.buaoye.oss.core.cache.BayOssCacheManager;
@@ -79,12 +80,12 @@ public class OssHandlerTest {
         // 获取桶测试
         String bucketLocation = client.getBucketLocation(new GetBucketLocationRequest(bucketName));
         if (StringUtil.isNullOrUndefined(bucketLocation)) {
-            throw new BuaoyeException("OSS 操作测试，桶获取失败");
+            throw new BuaoyeException(ErrorCodeConstant.TEST_GET_BUCKET_EXCEPTION);
         }
         // 客户端复用测试
         AmazonS3 reuseClient = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
         if (reuseClient == null || !Objects.equals(reuseClient, client)) {
-            throw new BuaoyeException("OSS 操作测试，客户端复用测试失败");
+            throw new BuaoyeException(ErrorCodeConstant.TEST_CLIENT_REUSE_EXCEPTION);
         }
         log.info("OSS 操作测试，获取到桶{}", bucketLocation);
         // 下载文件测试
@@ -94,7 +95,7 @@ public class OssHandlerTest {
             bayOssHandler.downloadFile(endpointUrl, bucketName, keyId, keySecret, objectName, filename, fileId, 3 * 1024, outputStream);
         } catch (IOException e) {
             log.error("OSS 操作测试异常，下载文件测试异常");
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(e, ErrorCodeConstant.TEST_DOWNLOAD_EXCEPTION);
         }
         // 缓存测试
         File downloadCacheFile = new File("./cache_" + filename);
@@ -103,7 +104,7 @@ public class OssHandlerTest {
             bayOssHandler.downloadFile(endpointUrl, bucketName, keyId, keySecret, objectName, filename, fileId, 3 * 1024, outputStream);
         } catch (IOException e) {
             log.error("OSS 操作测试异常，缓存文件测试异常");
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(e, ErrorCodeConstant.TEST_CACHE_FILE_EXCEPTION);
         }
         // 客户端统计测试
         log.info("OSS 操作测试，客户端统计信息{}", bayOssClientManager.getStatistic().toString());

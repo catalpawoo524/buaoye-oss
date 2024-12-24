@@ -1,6 +1,7 @@
 package com.buaoye.oss.starter;
 
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.exception.ErrorCodeConstant;
 import com.buaoye.oss.common.thread.BayThreadPool;
 import com.buaoye.oss.core.handler.BayOssHandler;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ public class ConcurrencyTest {
                                 bayOssHandler.downloadFile(endpointUrl, bucketName, keyId, keySecret, objectName, filename, fileId, 3 * 1024, outputStream);
                             } catch (IOException e) {
                                 log.error("并发测试异常，下载文件测试异常");
-                                throw new BuaoyeException(e);
+                                throw new BuaoyeException(e, ErrorCodeConstant.TEST_DOWNLOAD_EXCEPTION);
                             }
                             log.info("并发测试执行中，第{}个文件下载完成，消耗时长{}毫秒", num, System.currentTimeMillis() - threadStartTime);
                             return downloadFile;

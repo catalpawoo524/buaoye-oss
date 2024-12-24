@@ -1,6 +1,7 @@
 package com.buaoye.oss.common.thread;
 
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.exception.ErrorCodeConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class BayThreadPool {
                 runnable.run();
             } catch (Exception e) {
                 log.error("Buaoye Oss - 线程池任务分发异常");
-                throw new BuaoyeException(e);
+                throw new BuaoyeException(e, ErrorCodeConstant.THREAD_POOL_DISTRIBUTION_EXCEPTION);
             }
         }, bayAsyncExecutor);
     }
@@ -74,7 +75,7 @@ public class BayThreadPool {
                 return supplier.get();
             } catch (Exception e) {
                 log.error("Buaoye Oss - 线程池任务分发异常");
-                throw new BuaoyeException(e);
+                throw new BuaoyeException(e, ErrorCodeConstant.THREAD_POOL_DISTRIBUTION_EXCEPTION);
             }
         }, bayAsyncExecutor);
     }

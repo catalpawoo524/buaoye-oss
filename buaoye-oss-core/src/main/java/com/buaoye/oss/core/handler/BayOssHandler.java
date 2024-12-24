@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.buaoye.oss.common.exception.BuaoyeException;
+import com.buaoye.oss.common.exception.ErrorCodeConstant;
 import com.buaoye.oss.common.thread.BayThreadPool;
 import com.buaoye.oss.common.util.StringUtil;
 import com.buaoye.oss.core.cache.BayOssCacheManager;
@@ -62,7 +63,7 @@ public class BayOssHandler implements OssHandler {
         String bucketLocation = client.getBucketLocation(new GetBucketLocationRequest(bucketName));
         if (StringUtil.isNullOrUndefined(bucketLocation)) {
             log.error("Buaoye Oss - 桶不存在或已删除，参数：client={}，bucket={}", client, bucketName);
-            throw new BuaoyeException("桶不存在或已删除");
+            throw new BuaoyeException(ErrorCodeConstant.OSS_BUCKET_NOT_EXIST_EXCEPTION);
         }
     }
 
@@ -73,7 +74,7 @@ public class BayOssHandler implements OssHandler {
         try (ByteArrayInputStream inputStream = uploadReq.getInputStream()) {
             if (inputStream == null) {
                 log.error("Buaoye Oss - 上传文件失败，上传文件流为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
-                throw new BuaoyeException("上传文件失败，上传文件流为空");
+                throw new BuaoyeException(ErrorCodeConstant.OSS_FILE_UPLOAD_EXCEPTION);
             }
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(inputStream.available());
@@ -84,14 +85,14 @@ public class BayOssHandler implements OssHandler {
             PutObjectResult result = client.putObject(bucketName, objectName, inputStream, metadata);
             if (result == null) {
                 log.error("Buaoye Oss - 上传文件失败，响应结果为空，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
-                throw new BuaoyeException("上传文件失败，响应结果为空");
+                throw new BuaoyeException(ErrorCodeConstant.OSS_FILE_UPLOAD_EXCEPTION);
             }
             long endTime = System.currentTimeMillis();
             log.debug("Buaoye Oss - 上传文件执行成功，文件大小为{}字节，耗时{}毫秒", metadata.getContentLength(), endTime - starTime);
             return new UploadResp(client.getUrl(bucketName, objectName).toString(), metadata.getContentLength(), result.getContentMd5());
         } catch (IOException e) {
             log.error("Buaoye Oss - 上传文件失败，获取上传文件流异常，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(e, ErrorCodeConstant.OSS_FILE_UPLOAD_EXCEPTION);
         }
     }
 
@@ -116,7 +117,7 @@ public class BayOssHandler implements OssHandler {
                 }
             } catch (IOException e) {
                 log.error("Buaoye Oss - 下载文件至请求响应流失败，流处理异常，参数：url={}，bucket={}，keyId={}，objectName={}", endpointUrl, bucketName, keyId, objectName);
-                throw new BuaoyeException(e);
+                throw new BuaoyeException(e, ErrorCodeConstant.OSS_FILE_DOWNLOAD_EXCEPTION);
             }
         }, metadata.getETag());
         fileCacheDefinition.read(outputStream);
@@ -149,7 +150,7 @@ public class BayOssHandler implements OssHandler {
                                     }
                                 } catch (IOException e) {
                                     log.error("Buaoye Oss - 分块下载完整文件至请求响应流失败，流处理异常，参数：url={}，bucket={}，keyId={}，objectName={}，start={}，end={}", endpointUrl, bucketName, keyId, objectName, start, end);
-                                    throw new BuaoyeException(e);
+                                    throw new BuaoyeException(e, ErrorCodeConstant.OSS_FILE_DOWNLOAD_EXCEPTION);
                                 }
                                 log.debug("Buaoye Oss - 完成从对象存储下载分块，参数：start={}，end={}", start, end);
                                 return tempFile;
@@ -181,7 +182,7 @@ public class BayOssHandler implements OssHandler {
             IOUtils.copy(inputStream, outputStream);
         } catch (IOException e) {
             log.error("Buaoye Oss - 分块下载文件至请求响应流失败，流转换异常，参数：url={}，bucket={}，keyId={}，objectName={}，start={}，end={}", endpointUrl, bucketName, keyId, objectName, start, end);
-            throw new BuaoyeException(e);
+            throw new BuaoyeException(e, ErrorCodeConstant.OSS_FILE_DOWNLOAD_EXCEPTION);
         }
         return end - start + 1;
     }
