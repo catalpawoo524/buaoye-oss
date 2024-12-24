@@ -94,7 +94,7 @@ public class ClientStatistic implements Serializable {
         this.disconnectClients = disconnectClients;
     }
 
-    private String getDisconnectClientsStr() {
+    private String disconnectClientsToString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[\n");
         Iterator<ProxyClient> iterator = this.disconnectClients.iterator();
@@ -117,7 +117,7 @@ public class ClientStatistic implements Serializable {
                 "\"earliestCreateTime\": \"" + this.earliestCreateTime.toString() + "\",\n" +
                 "\"mostFrequentClient\": " + (this.mostFrequentClient == null ? "null" : this.mostFrequentClient.toString()) + ",\n" +
                 "\"longestUnusedClient\": " + (this.longestUnusedClient == null ? "null" : this.longestUnusedClient.toString()) + ",\n" +
-                "\"disconnectClients\": " + this.getDisconnectClientsStr() + "\n" +
+                "\"disconnectClients\": " + this.disconnectClientsToString() + "\n" +
                 "}";
     }
 

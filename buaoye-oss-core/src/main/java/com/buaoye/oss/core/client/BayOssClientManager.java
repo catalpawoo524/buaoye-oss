@@ -51,16 +51,16 @@ public class BayOssClientManager implements DisposableBean {
      * @param keySecret   密钥
      * @return 客户端
      */
-    public AmazonS3 getClient(String endpointUrl, String keyId, String keySecret) {
+    public AmazonS3 get(String endpointUrl, String keyId, String keySecret) {
         // 根据 endpointUrl 获取或创建 serviceMap
         Map<String, ProxyClient> serviceMap = CLIENT_CONNECTION_POOL.computeIfAbsent(endpointUrl, k -> new ConcurrentHashMap<>());
         // 根据 keyId 获取或创建 AmazonS3
-        ProxyClient client = serviceMap.computeIfAbsent(keyId, k -> createClient(endpointUrl, keyId, keySecret));
+        ProxyClient client = serviceMap.computeIfAbsent(keyId, k -> create(endpointUrl, keyId, keySecret));
         // 测试连接是否正常
         if (client.isDisconnect()) {
             log.warn("Buaoye Oss - 获取到的客户端已断开，即将创建新的连接，参数：endpointUrl={}，keyId={}", endpointUrl, keyId);
             serviceMap.remove(keyId);
-            client = serviceMap.computeIfAbsent(keyId, k -> createClient(endpointUrl, keyId, keySecret));
+            client = serviceMap.computeIfAbsent(keyId, k -> create(endpointUrl, keyId, keySecret));
         }
         return client.getClient();
     }
@@ -73,7 +73,7 @@ public class BayOssClientManager implements DisposableBean {
      * @param keySecret   密钥
      * @return 客户端
      */
-    private ProxyClient createClient(String endpointUrl, String keyId, String keySecret) {
+    private ProxyClient create(String endpointUrl, String keyId, String keySecret) {
         try {
             log.debug("Buaoye Oss - 未获取到可复用客户端连接，执行客户端创建，参数：endpointUrl={}，keyId={}", endpointUrl, keyId);
             return new ProxyClient(
@@ -99,7 +99,7 @@ public class BayOssClientManager implements DisposableBean {
      *
      * @return 客户端统计信息
      */
-    public synchronized ClientStatistic getStatistic() {
+    public synchronized ClientStatistic statistic() {
         ClientStatistic clientStatistic = new ClientStatistic();
         CLIENT_CONNECTION_POOL.forEach((endpointUrl, serviceMap) -> {
             serviceMap.forEach((keyId, client) -> {
@@ -127,13 +127,13 @@ public class BayOssClientManager implements DisposableBean {
 
     @Override
     public void destroy() {
-        shutdownAll();
+        shutdown();
     }
 
     /**
      * 关闭所有客户端
      */
-    private void shutdownAll() {
+    private void shutdown() {
         for (String endpointUrl : CLIENT_CONNECTION_POOL.keySet()) {
             Map<String, ProxyClient> serviceMap = CLIENT_CONNECTION_POOL.remove(endpointUrl);
             if (serviceMap != null) {

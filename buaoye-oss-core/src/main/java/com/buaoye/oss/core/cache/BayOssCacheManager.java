@@ -26,16 +26,12 @@ public class BayOssCacheManager {
      * @param id       主键ID
      * @return 文件缓存定义类
      */
-    public static FileCacheDefinition create(String filename, String id) {
-        FileCacheDefinition defaultFileCacheDefinition = FILE_CACHE_DEFINITIONS.get(id);
-        if (defaultFileCacheDefinition == null) {
-            defaultFileCacheDefinition = new DefaultFileCacheDefinition(id, filename);
-            FILE_CACHE_DEFINITIONS.put(id, defaultFileCacheDefinition);
-        }
+    public static FileCacheDefinition get(String filename, String id) {
+        FileCacheDefinition defaultFileCacheDefinition = FILE_CACHE_DEFINITIONS.computeIfAbsent(id, k -> new DefaultFileCacheDefinition(id, filename));
         return defaultFileCacheDefinition.access();
     }
 
-    public static Map<String, FileCacheDefinition> getFileCacheDefinitions() {
+    public static Map<String, FileCacheDefinition> definitions() {
         return FILE_CACHE_DEFINITIONS;
     }
 

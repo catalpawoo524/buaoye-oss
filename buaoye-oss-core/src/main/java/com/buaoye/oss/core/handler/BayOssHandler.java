@@ -45,12 +45,12 @@ public class BayOssHandler implements OssHandler {
     @Override
     public void createBucket(CannedAccessControlList accessControl, String bucketName, String endpointUrl, String keyId, String keySecret) {
         CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName).withCannedAcl(accessControl);
-        bayOssClientManager.getClient(endpointUrl, keyId, keySecret).createBucket(createBucketRequest);
+        bayOssClientManager.get(endpointUrl, keyId, keySecret).createBucket(createBucketRequest);
     }
 
     @Override
     public void deleteBucket(String bucketName, String endpointUrl, String keyId, String keySecret) {
-        bayOssClientManager.getClient(endpointUrl, keyId, keySecret).deleteBucket(bucketName);
+        bayOssClientManager.get(endpointUrl, keyId, keySecret).deleteBucket(bucketName);
     }
 
     /**
@@ -69,7 +69,7 @@ public class BayOssHandler implements OssHandler {
 
     @Override
     public UploadResp uploadFile(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, UploadReq uploadReq) {
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         bucketExist(client, bucketName);
         try (ByteArrayInputStream inputStream = uploadReq.getInputStream()) {
             if (inputStream == null) {
@@ -98,8 +98,8 @@ public class BayOssHandler implements OssHandler {
 
     @Override
     public void downloadFile(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, String filename, String fileId, OutputStream outputStream) {
-        FileCacheDefinition fileCacheDefinition = BayOssCacheManager.create(filename, fileId);
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        FileCacheDefinition fileCacheDefinition = BayOssCacheManager.get(filename, fileId);
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         bucketExist(client, bucketName);
         ObjectMetadata metadata = client.getObjectMetadata(bucketName, objectName);
         fileCacheDefinition.load((definition, content) -> {
@@ -125,8 +125,8 @@ public class BayOssHandler implements OssHandler {
 
     @Override
     public long downloadFile(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, String filename, String fileId, long chunkSize, OutputStream outputStream) {
-        FileCacheDefinition fileCacheDefinition = BayOssCacheManager.create(filename, fileId);
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        FileCacheDefinition fileCacheDefinition = BayOssCacheManager.get(filename, fileId);
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         bucketExist(client, bucketName);
         ObjectMetadata metadata = client.getObjectMetadata(bucketName, objectName);
         long totalSize = metadata.getContentLength();
@@ -166,7 +166,7 @@ public class BayOssHandler implements OssHandler {
 
     @Override
     public long downloadFile(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, String filename, String fileId, long start, long end, OutputStream outputStream) {
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         bucketExist(client, bucketName);
         ObjectMetadata metadata = client.getObjectMetadata(bucketName, objectName);
         long totalSize = metadata.getContentLength();
@@ -188,8 +188,8 @@ public class BayOssHandler implements OssHandler {
     }
 
     @Override
-    public URL getPresignedUrl(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, long expireSecond) {
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+    public URL presignedUrl(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, long expireSecond) {
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         Date expiration = new Date(System.currentTimeMillis() + expireSecond * 1000);
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, objectName)
                 .withMethod(HttpMethod.GET)
@@ -202,7 +202,7 @@ public class BayOssHandler implements OssHandler {
         if (objectNames == null || objectNames.length < 1) {
             return;
         }
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         bucketExist(client, bucketName);
         List<DeleteObjectsRequest.KeyVersion> objectsToDelete = Arrays.stream(objectNames).map(DeleteObjectsRequest.KeyVersion::new).collect(Collectors.toList());
         client.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(objectsToDelete).withQuiet(false));

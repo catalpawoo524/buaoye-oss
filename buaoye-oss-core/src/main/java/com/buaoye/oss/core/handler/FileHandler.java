@@ -85,7 +85,7 @@ public interface FileHandler {
      * @param expireSecond 超时时间（单位：秒）
      * @return URL
      */
-    URL getPresignedUrl(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, long expireSecond);
+    URL presignedUrl(String endpointUrl, String bucketName, String keyId, String keySecret, String objectName, long expireSecond);
 
     /**
      * 删除文件

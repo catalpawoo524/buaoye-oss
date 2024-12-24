@@ -37,7 +37,7 @@ public class BayOssCacheTask {
         LocalDateTime latestTime = LocalDateTime.now().minusMinutes(bayOssCacheProperty.getCacheTime());
         List<FileCacheDefinition> clearList = new ArrayList<>();
         AtomicLong totalSize = new AtomicLong();
-        List<FileCacheDefinition> fileCacheList = BayOssCacheManager.getFileCacheDefinitions().values().stream().filter(item -> {
+        List<FileCacheDefinition> fileCacheList = BayOssCacheManager.definitions().values().stream().filter(item -> {
             if (item.getAccessTime().isBefore(latestTime)) {
                 // 清理长时间未访问的文件
                 clearList.add(item);
@@ -57,7 +57,7 @@ public class BayOssCacheTask {
         long clearSize = 0;
         for (FileCacheDefinition fileCacheDefinition : clearList) {
             clearSize += fileCacheDefinition.delete();
-            BayOssCacheManager.getFileCacheDefinitions().remove(fileCacheDefinition.getId());
+            BayOssCacheManager.definitions().remove(fileCacheDefinition.getId());
         }
         log.info("Buaoye Oss - 文件缓存清理定时任务执行成功，当前使用缓存{}字节，限制缓存{}字节，本次清理缓存{}字节", totalSize.get(), bayOssCacheProperty.getMaxCacheSize(), clearSize);
     }

@@ -73,17 +73,17 @@ public class OssHandlerTest {
     @Test
     public void ossHandlerTest() {
         // 获取客户端测试
-        AmazonS3 client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         // 主动断连测试
         client.shutdown();
-        client = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         // 获取桶测试
         String bucketLocation = client.getBucketLocation(new GetBucketLocationRequest(bucketName));
         if (StringUtil.isNullOrUndefined(bucketLocation)) {
             throw new BuaoyeException(ErrorCodeConstant.TEST_GET_BUCKET_EXCEPTION);
         }
         // 客户端复用测试
-        AmazonS3 reuseClient = bayOssClientManager.getClient(endpointUrl, keyId, keySecret);
+        AmazonS3 reuseClient = bayOssClientManager.get(endpointUrl, keyId, keySecret);
         if (reuseClient == null || !Objects.equals(reuseClient, client)) {
             throw new BuaoyeException(ErrorCodeConstant.TEST_CLIENT_REUSE_EXCEPTION);
         }
@@ -107,12 +107,12 @@ public class OssHandlerTest {
             throw new BuaoyeException(e, ErrorCodeConstant.TEST_CACHE_FILE_EXCEPTION);
         }
         // 客户端统计测试
-        log.info("OSS 操作测试，客户端统计信息{}", bayOssClientManager.getStatistic().toString());
+        log.info("OSS 操作测试，客户端统计信息{}", bayOssClientManager.statistic().toString());
         // 并发缓存回收测试
         CompletableFuture<Void> allTasks = CompletableFuture.allOf(
                 LongStream.range(1, 4)
                         .mapToObj(num -> CompletableFuture.supplyAsync(() -> {
-                            BayOssCacheManager.create(filename, fileId).useContent((definition, content) -> {
+                            BayOssCacheManager.get(filename, fileId).useContent((definition, content) -> {
                                 content.startUsing();
                                 List<File> files = content.getFiles();
                                 definition.delete();
