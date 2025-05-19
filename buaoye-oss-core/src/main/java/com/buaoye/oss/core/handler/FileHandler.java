@@ -21,7 +21,7 @@ public interface FileHandler {
      * @param bucketName  桶名称
      * @param keyId       ID
      * @param keySecret   密钥
-     * @param objectName  对象名称
+     * @param objectName  对象名称 / 路径
      * @param uploadReq   上传文件对象
      * @return 文件实体类
      */
@@ -34,7 +34,7 @@ public interface FileHandler {
      * @param bucketName   桶名称
      * @param keyId        ID
      * @param keySecret    密钥
-     * @param objectName   对象名称
+     * @param objectName   对象名称 / 路径
      * @param filename     文件名
      * @param fileId       文件ID
      * @param outputStream 输出流
@@ -48,7 +48,7 @@ public interface FileHandler {
      * @param bucketName   桶名称
      * @param keyId        ID
      * @param keySecret    密钥
-     * @param objectName   对象名称
+     * @param objectName   对象名称 / 路径
      * @param filename     文件名
      * @param fileId       文件ID
      * @param chunkSize    分块大小
@@ -64,7 +64,7 @@ public interface FileHandler {
      * @param bucketName   桶名称
      * @param keyId        ID
      * @param keySecret    密钥
-     * @param objectName   对象名称
+     * @param objectName   对象名称 / 路径
      * @param filename     文件名
      * @param fileId       文件ID
      * @param start        起始
@@ -81,7 +81,7 @@ public interface FileHandler {
      * @param bucketName   桶名称
      * @param keyId        ID
      * @param keySecret    密钥
-     * @param objectName   对象名称
+     * @param objectName   对象名称 / 路径
      * @param expireSecond 超时时间（单位：秒）
      * @return URL
      */
@@ -94,8 +94,22 @@ public interface FileHandler {
      * @param bucketName  桶名称
      * @param keyId       ID
      * @param keySecret   密钥
-     * @param objectNames 对象名称数组
+     * @param objectNames 对象名称 / 路径 的数组
      */
     void deleteFile(String endpointUrl, String bucketName, String keyId, String keySecret, String... objectNames);
+
+    /**
+     * 复制文件
+     *
+     * @param endpointUrl      端点URL
+     * @param keyId            ID
+     * @param keySecret        密钥
+     * @param sourceBucket     来源桶
+     * @param sourceObjectName 来源对象名称 / 路径
+     * @param targetBucket     目标桶
+     * @param targetObjectName 目标对象名称 / 路径
+     * @return 文件实体类
+     */
+    UploadResp copyFile(String endpointUrl, String keyId, String keySecret, String sourceBucket, String sourceObjectName, String targetBucket, String targetObjectName);
 
 }

@@ -9,6 +9,7 @@ import com.buaoye.oss.common.util.StringUtil;
 import com.buaoye.oss.core.cache.BayOssCacheManager;
 import com.buaoye.oss.core.client.BayOssClientManager;
 import com.buaoye.oss.core.handler.BayOssHandler;
+import com.buaoye.oss.core.resp.UploadResp;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +98,8 @@ public class OssHandlerTest {
             log.error("OSS 操作测试异常，下载文件测试异常");
             throw new BuaoyeException(e, ErrorCodeConstant.TEST_DOWNLOAD_EXCEPTION);
         }
+        // 复制文件测试
+        copyFile();
         // 缓存测试
         File downloadCacheFile = new File("./cache_" + filename);
         downloadCacheFile.deleteOnExit();
@@ -126,6 +129,13 @@ public class OssHandlerTest {
                         .toArray(CompletableFuture[]::new)
         );
         allTasks.join();
+    }
+
+    private void copyFile() {
+        long startTime = System.currentTimeMillis();
+        UploadResp resp = bayOssHandler.copyFile(endpointUrl, keyId, keySecret, bucketName, objectName, bucketName, "1726281700679174/20241107/" + System.currentTimeMillis() + ".png");
+        long endTime = System.currentTimeMillis();
+        log.info("文件复制测试，复制文件结果secret-{} size-{} url-{}，耗时{}ms", resp.getSecret(), resp.getSize(), resp.getUrl(), endTime - startTime);
     }
 
 }

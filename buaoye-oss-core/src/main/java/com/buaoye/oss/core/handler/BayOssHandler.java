@@ -13,6 +13,7 @@ import com.buaoye.oss.core.cache.definition.FileCacheDefinition;
 import com.buaoye.oss.core.client.BayOssClientManager;
 import com.buaoye.oss.core.req.UploadReq;
 import com.buaoye.oss.core.resp.UploadResp;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,6 +207,29 @@ public class BayOssHandler implements OssHandler {
         bucketExist(client, bucketName);
         List<DeleteObjectsRequest.KeyVersion> objectsToDelete = Arrays.stream(objectNames).map(DeleteObjectsRequest.KeyVersion::new).collect(Collectors.toList());
         client.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(objectsToDelete).withQuiet(false));
+    }
+
+    @Override
+    public UploadResp copyFile(String endpointUrl, String keyId, String keySecret, String sourceBucket, String sourceObjectName, String targetBucket, String targetObjectName) {
+        AmazonS3 client = bayOssClientManager.get(endpointUrl, keyId, keySecret);
+        bucketExist(client, sourceBucket);
+        bucketExist(client, targetBucket);
+        CopyObjectRequest copyRequest = new CopyObjectRequest(
+                sourceBucket, sourceObjectName, targetBucket, targetObjectName
+        );
+        client.copyObject(copyRequest);
+        S3Object copied = client.getObject(targetBucket, targetObjectName);
+        try (InputStream is = copied.getObjectContent()) {
+            String md5 = DigestUtils.md5Hex(is);
+            ObjectMetadata metadata = copied.getObjectMetadata();
+            return new UploadResp(
+                    client.getUrl(targetBucket, targetObjectName).toString(),
+                    metadata.getContentLength(),
+                    md5
+            );
+        } catch (IOException e) {
+            throw new BuaoyeException(e, ErrorCodeConstant.OSS_FILE_COPY_EXCEPTION);
+        }
     }
 
 }
